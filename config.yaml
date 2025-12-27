@@ -1,0 +1,31 @@
+# mir Trading System Configuration
+
+# Portfolio settings
+portfolio:
+  initial_cash: 10000.0  # Starting cash balance in USD
+
+# Data fetcher settings
+data_fetcher:
+  base_url: "https://api.coingecko.com/api/v3"
+
+# Trading strategies configuration
+strategies:
+  - type: moving_average
+    symbol: bitcoin
+    params:
+      short_window: 5      # Short moving average window
+      long_window: 20      # Long moving average window
+      position_pct: 0.1    # Percentage of available cash to use per trade (10%)
+  
+  # Add more strategies as needed
+  # - type: moving_average
+  #   symbol: ethereum
+  #   params:
+  #     short_window: 7
+  #     long_window: 25
+  #     position_pct: 0.1
+
+# Trading engine settings
+engine:
+  iterations: 10  # Number of trading iterations (0 for infinite)
+  interval: 60    # Seconds between iterations

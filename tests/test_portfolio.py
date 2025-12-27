@@ -56,19 +56,13 @@ class TestPortfolio(unittest.TestCase):
     
     def test_portfolio_value(self):
         """Test portfolio value calculation"""
-        self.portfolio.buy("bitcoin", 0.5, 50000.0)
-        self.portfolio.buy("ethereum", 10.0, 3000.0)
+        portfolio = Portfolio(initial_cash=100000.0)
+        portfolio.buy("bitcoin", 0.5, 50000.0)
+        portfolio.buy("ethereum", 10.0, 3000.0)
         
         prices = {"bitcoin": 55000.0, "ethereum": 3500.0}
-        value = self.portfolio.get_portfolio_value(prices)
+        value = portfolio.get_portfolio_value(prices)
         
-        # Cash remaining: 10000 - 25000 - 30000 = -45000 (impossible, but for test)
-        # Let's use realistic numbers
-        portfolio2 = Portfolio(initial_cash=100000.0)
-        portfolio2.buy("bitcoin", 0.5, 50000.0)
-        portfolio2.buy("ethereum", 10.0, 3000.0)
-        
-        value = portfolio2.get_portfolio_value(prices)
         expected = 100000.0 - 25000.0 - 30000.0 + (0.5 * 55000.0) + (10.0 * 3500.0)
         self.assertEqual(value, expected)
 

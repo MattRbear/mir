@@ -27,6 +27,8 @@ class MovingAverageStrategy(TradingStrategy):
         self.long_window = long_window
         self.position_pct = position_pct
         self.last_signal = None
+        self.prev_short_ma = None
+        self.prev_long_ma = None
         
     def _calculate_ma(self, window: int) -> float:
         """Calculate moving average for given window"""
@@ -45,14 +47,18 @@ class MovingAverageStrategy(TradingStrategy):
         if short_ma is None or long_ma is None:
             return False
         
-        # Check for bullish crossover
-        if short_ma > long_ma:
-            if self.last_signal != "buy":
-                self.last_signal = "buy"
-                print(f"Buy signal: Short MA ({short_ma:.2f}) > Long MA ({long_ma:.2f})")
-                return True
+        # Check for bullish crossover: short MA was below long MA and is now above
+        signal = False
+        if self.prev_short_ma is not None and self.prev_long_ma is not None:
+            if self.prev_short_ma <= self.prev_long_ma and short_ma > long_ma:
+                print(f"Buy signal: Bullish crossover - Short MA ({short_ma:.2f}) crossed above Long MA ({long_ma:.2f})")
+                signal = True
         
-        return False
+        # Update previous values for next iteration
+        self.prev_short_ma = short_ma
+        self.prev_long_ma = long_ma
+        
+        return signal
     
     def should_sell(self) -> bool:
         """Sell when short MA crosses below long MA"""
@@ -65,14 +71,20 @@ class MovingAverageStrategy(TradingStrategy):
         if short_ma is None or long_ma is None:
             return False
         
-        # Check for bearish crossover
-        if short_ma < long_ma:
-            if self.last_signal != "sell":
-                self.last_signal = "sell"
-                print(f"Sell signal: Short MA ({short_ma:.2f}) < Long MA ({long_ma:.2f})")
-                return True
+        # Check for bearish crossover: short MA was above long MA and is now below
+        signal = False
+        if self.prev_short_ma is not None and self.prev_long_ma is not None:
+            if self.prev_short_ma >= self.prev_long_ma and short_ma < long_ma:
+                print(f"Sell signal: Bearish crossover - Short MA ({short_ma:.2f}) crossed below Long MA ({long_ma:.2f})")
+                signal = True
         
-        return False
+        # Update previous values for next iteration (if not already updated in should_buy)
+        # Note: should_buy is typically called first, so this is a safety update
+        if self.prev_short_ma != short_ma or self.prev_long_ma != long_ma:
+            self.prev_short_ma = short_ma
+            self.prev_long_ma = long_ma
+        
+        return signal
     
     def get_position_size(self, available_cash: float, current_price: float) -> float:
         """

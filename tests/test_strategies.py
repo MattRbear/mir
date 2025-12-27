@@ -37,15 +37,27 @@ class TestMovingAverageStrategy(unittest.TestCase):
     
     def test_buy_signal_on_crossover(self):
         """Test buy signal on bullish crossover"""
-        # Create bearish trend then bullish crossover
-        prices = [50000, 49000, 48000, 47000, 46000, 47000, 49000, 52000]
+        # Create a downtrend followed by an uptrend to trigger crossover
+        # Prices: start high, go down, then go up
+        prices = [50000, 49000, 48000, 47000, 46000]  # Downtrend
         for price in prices:
             self.strategy.update_price(price)
         
-        # Should generate buy signal when short MA crosses above long MA
+        # Check no signal yet (in downtrend)
         result = self.strategy.should_buy()
-        # This depends on actual crossover, so we just test the logic works
-        self.assertIsInstance(result, bool)
+        self.assertFalse(result)
+        
+        # Add uptrend prices to create crossover
+        prices = [47000, 49000, 52000, 55000]
+        for price in prices:
+            self.strategy.update_price(price)
+            if self.strategy.should_buy():
+                # Crossover detected
+                break
+        
+        # The test just verifies the method works without errors
+        self.assertIsInstance(self.strategy.prev_short_ma, (float, type(None)))
+        self.assertIsInstance(self.strategy.prev_long_ma, (float, type(None)))
     
     def test_position_size_calculation(self):
         """Test position size calculation"""

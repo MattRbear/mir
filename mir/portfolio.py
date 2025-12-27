@@ -57,7 +57,6 @@ class Portfolio:
         
         self.cash -= cost
         self.holdings[symbol] = self.holdings.get(symbol, 0.0) + amount
-        
         transaction = {
             "type": "buy",
             "symbol": symbol,
@@ -90,7 +89,8 @@ class Portfolio:
         self.cash += proceeds
         self.holdings[symbol] = current_holdings - amount
         
-        if self.holdings[symbol] == 0:
+        # Remove symbol from holdings if amount is negligible
+        if self.holdings[symbol] < 1e-8:
             del self.holdings[symbol]
         
         transaction = {

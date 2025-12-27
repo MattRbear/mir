@@ -3,7 +3,6 @@ Data fetcher module for retrieving cryptocurrency prices
 """
 import requests
 from typing import Dict, Optional
-import time
 
 
 class DataFetcher:

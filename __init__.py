@@ -1,3 +1,3 @@
-﻿__all__ = ["__version__"]
+﻿from .aggregator import TimeframeAggregator
 
-__version__ = "0.1.0"
+__all__ = ["TimeframeAggregator"]
